@@ -2,7 +2,7 @@ import requests
 import json
 
 def send_code_to_lambda(language, code, inputs):
-    url = "http://localhost:9000/2015-03-31/functions/function/invocations"
+    url = "http://localhost:900/2015-03-31/functions/function/invocations"
     
     # Create the payload
     payload = {
@@ -26,18 +26,20 @@ def send_code_to_lambda(language, code, inputs):
             'statusCode': response.status_code,
             'body': response.text
         }
-if __name__ == "__main__":
-    language = "python"
-    code = """
-def main():
-    name = input("Enter your name: ")
-    print(f"Hello, {name}")
+# if __name__ == "__main__":
+#     language = "python"
+#     code = """
+# def main():
+#     name = input("Enter your name: ")
+#     print(f"Hello, {name}")
 
-if __name__ == "__main__":
-    main()
-"""
-    inputs = ["Alice"]
+# if __name__ == "__main__":
+#     main()
+# """
+#     inputs = ["Alice"]
         
+
+
  # Example usage for C++
 # if __name__ == "__main__":
 #     language = "cpp"

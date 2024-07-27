@@ -1,75 +1,74 @@
-import sys
 import subprocess
-import io
+import tempfile
+import os
 
 def execute_python(code, user_inputs=None):
-    original_stdout = sys.stdout
-    original_stdin = sys.stdin
-    
-    # Redirect stdout to capture output
-    sys.stdout = io.StringIO()
-    
     if user_inputs is None:
         user_inputs = []
-    
-    # Simulate user inputs by redirecting stdin
-    sys.stdin = io.StringIO("\n".join(user_inputs))
-    
+
     try:
-        exec(code)
-        out = sys.stdout.getvalue()
-        return out
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as temp_file:
+            temp_file.write(code.encode())
+            temp_file.flush()
+            temp_filename = temp_file.name
+
+        input_str = "\n".join(user_inputs)
+
+        result = subprocess.run(
+            ['python3', temp_filename],
+            input=input_str.encode(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        output = result.stdout.decode().strip()
+        error = result.stderr.decode().strip()
+
+        if result.returncode == 0:
+            return output
+        else:
+            return f"Error: {error}"
+
     except Exception as e:
         return str(e)
     finally:
-        sys.stdout = original_stdout
-        sys.stdin = original_stdin  # Reset stdin to the default
-
-
+        os.remove(temp_filename)
 
 def execute_java(code, user_inputs=None):
     try:
         if user_inputs is None:
             user_inputs = []
 
-        # Write the Java code to a file
         with open('/tmp/Main.java', 'w') as java_file:
             java_file.write(code)
 
-        # Compile the Java code
         compile_result = subprocess.run(
             ['javac', '/tmp/Main.java'], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
 
-        # Check if compilation was successful
         if compile_result.returncode != 0:
             return {
                 'statusCode': 400,
                 'body': f"Compilation failed: {compile_result.stderr.decode()}"
             }
 
-        # Prepare the input string
         input_str = "\n".join(user_inputs)
 
-        # Run the Java code
         run_result = subprocess.run(
             ['java', '-classpath', '/tmp', 'Main'],
-            input=input_str.encode(),  # Pass user inputs to the Java program
+            input=input_str.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
 
-        # Check for runtime errors
         if run_result.returncode != 0:
             return {
                 'statusCode': 400,
                 'body': f"Runtime error: {run_result.stderr.decode()}"
             }
 
-        # Get the output and remove any trailing newlines
         output = run_result.stdout.decode().strip()
 
-        # Return the output from the Java program
         return {
             'statusCode': 200,
             'body': output
@@ -81,7 +80,6 @@ def execute_java(code, user_inputs=None):
             'body': f"Exception: {str(e)}"
         }
 
-
 def execute_cpp(code, user_inputs=None):
     try:
         if user_inputs is None:
@@ -90,7 +88,6 @@ def execute_cpp(code, user_inputs=None):
         with open('/tmp/temp.cpp', 'w') as cpp_file:
             cpp_file.write(code)
 
-        # Compile the C++ code
         compile_result = subprocess.run(
             ['g++', '/tmp/temp.cpp', '-o', '/tmp/temp'],
             stdout=subprocess.PIPE,
@@ -100,13 +97,11 @@ def execute_cpp(code, user_inputs=None):
         if compile_result.returncode != 0:
             return f"Compilation failed: {compile_result.stderr.decode()}"
 
-        # Prepare the input string
         input_str = "\n".join(user_inputs)
 
-        # Run the C++ code
         run_result = subprocess.run(
             ['/tmp/temp'],
-            input=input_str.encode(),  # Pass user inputs to the C++ program
+            input=input_str.encode(),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
@@ -114,11 +109,16 @@ def execute_cpp(code, user_inputs=None):
 
     except Exception as e:
         return str(e)
+event={
+    "language": "python",
+    "code": "print('Hello, ' + input('Enter your name: '))",
+    "inputs": ["Alice"]
+}
 
-def handler(event, context):
+def handler(event, context=None):
     language = event.get('language', 'python')
     code = event.get('code', '')
-    user_inputs = event.get('inputs', [])  # Get a list of user inputs from the event
+    user_inputs = event.get('inputs', [])
 
     if language == 'python':
         res = execute_python(code, user_inputs)
@@ -128,7 +128,8 @@ def handler(event, context):
         res = execute_cpp(code, user_inputs)
     else:
         res = f'Unsupported Language: {language}'
-
+    
+    print(res)
     return {
         'statusCode': 200,
         'body': res
