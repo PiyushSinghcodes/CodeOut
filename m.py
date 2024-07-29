@@ -51,22 +51,35 @@ def read_file(file_path):
     with open(file_path, 'r') as file:
         return file.read()
 
+def get_language_from_extension(extension):
+    language_map = {
+        'py': 'python',
+        'cpp': 'cpp',
+        'java': 'java'
+    }
+    return language_map.get(extension, 'unsupported')
+
 if __name__ == "__main__":
-    zip_file_path = '/Users/piyushsingh/Desktop/app/df/compiler-server/project-66a79e50b7e08d0fc727d04e.zip'
+    zip_file_path = 'compiler-server/codeRepo/project-66a79e50b7e08d0fc727d04e.zip'
     
-    # Extract the zip file
+ 
     extract_path = extract_zip(zip_file_path)
     
-    # Get the main script file and inputs
+   
     main_file, inputs_list = get_main_file_and_inputs(extract_path)
     
     if main_file:
-        language = main_file.split('.')[-1]
-        code = read_file(main_file)
+        file_extension = main_file.split('.')[-1]
+        language = get_language_from_extension(file_extension)
         
-        # Iterate over each input
-        for input_data in inputs_list:
-            result = send_code_to_lambda(language, code, [input_data])
-            print(f"Output for input '{input_data}': {result}")
+        if language == 'unsupported':
+            print("Unsupported language:", file_extension)
+        else:
+            code = read_file(main_file)
+            
+          
+            for input_data in inputs_list:
+                result = send_code_to_lambda(language, code, [input_data])
+                print(f"Output for input '{input_data}': {result}")
     else:
         print("No main script file found in the zip.")
