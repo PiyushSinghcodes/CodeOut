@@ -26,60 +26,25 @@ def send_code_to_lambda(language, code, inputs):
             'statusCode': response.status_code,
             'body': response.text
         }
-# if __name__ == "__main__":
-#     language = "python"
-#     code = """
-# def main():
-#     name = input("Enter your name: ")
-#     print(f"Hello, {name}")
 
-# if __name__ == "__main__":
-#     main()
-# """
-#     inputs = ["Alice"]
-        
+if __name__ == "__main__":
+    language = "python"
+    code = """
+def main():
+    name = input("Enter your name: ")
+    print(f"Hello, {name}")
 
-
- # Example usage for C++
-# if __name__ == "__main__":
-#     language = "cpp"
-#     code = """
-# #include <iostream>
-# using namespace std;
-
-# int main() {
-#     string name;
-#     cout << "Enter your name: ";
-#     cin >> name;
-#     cout << "Hello, " << name << endl;
-#     return 0;
-# }
-# """
-#     inputs = ["Alice"]       
-
-# Example usage for Java with inputs
-# if __name__ == "__main__":
-#     language = "java"
-#     code = """
-# import java.util.Scanner;
-
-# class Main {
-#     public static void main(String[] args) {
-#         Scanner scanner = new Scanner(System.in);
-
-#         System.out.print("Enter a number: ");
-#         int num1 = scanner.nextInt();
-#         System.out.print("Enter another number: ");
-#         int num2 = scanner.nextInt();
-        
-#         int sum = num1 + num2;
-#         System.out.println("The sum is: " + sum);
-
-#         scanner.close();
-#     }
-# }
-# """
-#     inputs = ["5", "7"]
+if __name__ == "__main__":
+    main()
+"""
+    # Multiple sets of inputs
+    inputs_list = [
+        ["Alice"],
+        ["Bob"],
+        ["Charlie"]
+    ]
     
-    result = send_code_to_lambda(language, code, inputs)
-    print("Output", result)
+    # Iterate over each set of inputs
+    for inputs in inputs_list:
+        result = send_code_to_lambda(language, code, inputs)
+        print("Output for inputs", inputs, ":", result)

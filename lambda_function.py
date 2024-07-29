@@ -120,7 +120,7 @@ def handler(event, context=None):
     code = event.get('code', '')
     user_inputs = event.get('inputs', [])
 
-    if language == 'python':
+    if language == 'py':
         res = execute_python(code, user_inputs)
     elif language == 'java':
         res = execute_java(code, user_inputs)
