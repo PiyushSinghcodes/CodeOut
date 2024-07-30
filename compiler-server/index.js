@@ -38,6 +38,40 @@ app.post('/initiate-compilation', async (req, res) => {
     }
 });
 
+// function runPythonScript(filePath) {
+//     return new Promise((resolve, reject) => {
+//         const scriptPath = path.join(__dirname, 'main.py');
+//         const args = [filePath]; // Add any arguments you need to pass to the Python script
+
+//         execFile('python3', [scriptPath, ...args], (error, stdout, stderr) => {
+//             if (error) {
+//                 console.error('Error executing Python script:', error);
+//                 reject(stderr);
+//             } else {
+//                 console.log('Python script output:', stdout);
+//                 resolve(stdout);
+//             }
+//         });
+//     });
+// }
+
+// async function sendOutputsToBackend(projectId, outputs) {
+//     try {
+//         const formData = new FormData();
+//         formData.append('projectId', projectId);
+//         formData.append('outputs', outputs);
+
+//         const response = await axios.post(`${MAIN_BACKEND_URL}/api/v1/outputs/submit`, formData, {
+//             headers: formData.getHeaders()
+//         });
+
+//         console.log('Outputs sent successfully:', response.data);
+//     } catch (error) {
+//         console.error('Error sending outputs to backend:', error);
+//     }
+// }
+
+
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Compiler server running on port ${PORT}`);

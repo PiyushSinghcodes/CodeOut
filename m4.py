@@ -74,17 +74,17 @@ def save_output(output, output_directory, input_name):
         output_file.write(output)
 
 if __name__ == "__main__":
-    # Directory where the ZIP files are stored
+    
     code_repo_directory = 'compiler-server/'
     
-    # Find the ZIP file in the directory
+    
     zip_file_path = find_zip_file(code_repo_directory)
     
     if zip_file_path:
-        # Extract the ZIP file
+        
         extract_path = extract_zip(zip_file_path)
         
-        # Get the main script file and input data
+        
         main_file, inputs_list = get_main_file_and_inputs(extract_path)
         
         if main_file:
@@ -97,14 +97,14 @@ if __name__ == "__main__":
                 code = read_file(main_file)
                 output_directory = 'compiler-server/outputs'
                 
-                # Send the code and inputs to Lambda
+               
                 for index, input_data in enumerate(inputs_list):
                     result = send_code_to_lambda(language, code, [input_data])
                     input_name = f"input_{index + 1}"
                     save_output(result, output_directory, input_name)
                     print(f"Output for input '{input_data}': {result}")
                     
-                # Clean up the extracted files
+                
                 shutil.rmtree(extract_path)
         else:
             print("No main script file found in the zip.")
