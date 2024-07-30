@@ -69,21 +69,24 @@ def find_zip_file(directory):
 def save_output(output, output_directory, input_name):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
+    
+    # Convert the output dictionary to a JSON string
+    output_str = json.dumps(output, indent=4)
+    
+    # Define the output file path
     output_file_path = os.path.join(output_directory, f"{input_name}_output.txt")
+    
+    # Write the JSON string to the file
     with open(output_file_path, 'w') as output_file:
-        output_file.write(output)
+        output_file.write(output_str)
 
 if __name__ == "__main__":
-    
     code_repo_directory = 'compiler-server/'
-    
     
     zip_file_path = find_zip_file(code_repo_directory)
     
     if zip_file_path:
-        
         extract_path = extract_zip(zip_file_path)
-        
         
         main_file, inputs_list = get_main_file_and_inputs(extract_path)
         
@@ -97,13 +100,11 @@ if __name__ == "__main__":
                 code = read_file(main_file)
                 output_directory = 'compiler-server/outputs'
                 
-               
                 for index, input_data in enumerate(inputs_list):
                     result = send_code_to_lambda(language, code, [input_data])
                     input_name = f"input_{index + 1}"
                     save_output(result, output_directory, input_name)
                     print(f"Output for input '{input_data}': {result}")
-                    
                 
                 shutil.rmtree(extract_path)
         else:
