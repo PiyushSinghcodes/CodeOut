@@ -5,7 +5,7 @@ import requests
 import json
 
 def send_code_to_lambda(language, code, inputs):
-    url = "http://localhost:900/2015-03-31/functions/function/invocations"
+    url = "http://localhost:9090/2015-03-31/functions/function/invocations"
     
     # Create the payload
     payload = {
