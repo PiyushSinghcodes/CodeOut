@@ -1,1 +1,1 @@
-"How many users will input their names?\nEnter your name: Hello, hello fromm input file\n"
+"Hello, Alex!"
